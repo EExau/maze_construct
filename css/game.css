@@ -1,0 +1,259 @@
+/* Estilos para la página del juego */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    overflow-x: hidden;
+}
+
+#gameContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#gameHeader {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+#gameHeader h1 {
+    font-size: 1.8em;
+    color: #ecf0f1;
+}
+
+#gameControls {
+    display: flex;
+    gap: 10px;
+}
+
+#gameControls button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+#gameControls button:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+#gameCanvas {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    min-height: 600px;
+}
+
+#gameInfo {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+}
+
+.info-section {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-section h3 {
+    color: #ecf0f1;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
+}
+
+#gameStats p {
+    margin-bottom: 8px;
+    color: #bdc3c7;
+}
+
+#gameStats strong {
+    color: #ecf0f1;
+}
+
+#gameStats span {
+    color: #3498db;
+    font-weight: bold;
+}
+
+#powerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.power-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.power-key {
+    background: #e74c3c;
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.power-name {
+    flex: 1;
+    color: #ecf0f1;
+}
+
+.power-count {
+    background: #27ae60;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+#controlsInfo p {
+    margin-bottom: 5px;
+    color: #bdc3c7;
+    font-size: 14px;
+}
+
+#controlsInfo strong {
+    color: #ecf0f1;
+}
+
+#configDisplay {
+    position: fixed;
+    top: 80px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    padding: 15px;
+    max-width: 300px;
+    max-height: 350px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+}
+
+#configDisplay h4 {
+    color: #ecf0f1;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+#configText {
+    color: #95a5a6;
+    font-size: 10px;
+    line-height: 1.2;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Canvas del juego */
+canvas {
+    border: 2px solid #34495e;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: #2c3e50;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    #gameInfo {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    #configDisplay {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: 20px;
+        max-width: none;
+    }
+}
+
+@media (max-width: 768px) {
+    #gameHeader {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    #gameInfo {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    #gameControls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .info-section {
+        padding: 10px;
+    }
+    
+    #configDisplay {
+        margin: 10px;
+        padding: 10px;
+    }
+}
+
+/* Animaciones */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.power-count {
+    animation: pulse 2s infinite;
+}
+
+/* Scrollbar personalizado */
+#configDisplay::-webkit-scrollbar {
+    width: 6px;
+}
+
+#configDisplay::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+#configDisplay::-webkit-scrollbar-thumb {
+    background: #3498db;
+    border-radius: 3px;
+}
+
+#configDisplay::-webkit-scrollbar-thumb:hover {
+    background: #2980b9;
+} 

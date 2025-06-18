@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Juego de Laberinto</title>
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="gameHeader">
+            <h1>🎮 Juego de Laberinto</h1>
+            <div id="gameControls">
+                <button onclick="restartGame()">🔄 Reiniciar</button>
+                <button onclick="goToConstructor()">🛠️ Constructor</button>
+                <button onclick="toggleFullscreen()">🖥️ Pantalla Completa</button>
+            </div>
+        </div>
+        
+        <div id="gameCanvas"></div>
+        
+        <div id="gameInfo">
+            <div class="info-section">
+                <h3>📋 Información del Juego</h3>
+                <div id="gameStats">
+                    <p><strong>Nivel:</strong> <span id="currentLevel">1</span></p>
+                    <p><strong>Tiempo Total:</strong> <span id="totalTime">00:00</span></p>
+                    <p><strong>Tiempo Nivel:</strong> <span id="levelTime">00:00</span></p>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h3>🎯 Poderes</h3>
+                <div id="powerInfo">
+                    <div class="power-item">
+                        <span class="power-key">1</span>
+                        <span class="power-name">Pico</span>
+                        <span class="power-count" id="pickaxeCount">0</span>
+                    </div>
+                    <div class="power-item">
+                        <span class="power-key">2</span>
+                        <span class="power-name">Bola de Nieve</span>
+                        <span class="power-count" id="snowballCount">0</span>
+                    </div>
+                    <div class="power-item">
+                        <span class="power-key">3</span>
+                        <span class="power-name">Aliado</span>
+                        <span class="power-count" id="allyCount">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h3>🎮 Controles</h3>
+                <div id="controlsInfo">
+                    <p><strong>Movimiento:</strong> Flechas / WASD</p>
+                    <p><strong>Poderes:</strong> 1, 2, 3</p>
+                    <p><strong>Apuntar:</strong> Flechas</p>
+                    <p><strong>Usar:</strong> Espacio</p>
+                    <p><strong>Cancelar:</strong> Escape</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="configDisplay">
+        <h4>⚙️ Configuración Actual</h4>
+        <pre id="configText"></pre>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/littlejs/littlejs.js"></script>
+    <script src="js/tiles.js"></script>
+    <script src="js/game_engine.js"></script>
+    
+    <script>
+        // Cargar configuración desde localStorage
+        const config = JSON.parse(localStorage.getItem('tempMazeConfig') || '{}');
+        
+        // Mostrar configuración
+        document.getElementById('configText').textContent = JSON.stringify(config, null, 2);
+        
+        // Funciones de control
+        function restartGame() {
+            location.reload();
+        }
+        
+        function goToConstructor() {
+            window.close();
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        // Inicializar juego con configuración
+        if (Object.keys(config).length > 0) {
+            console.log('🎮 Iniciando juego con configuración:', config);
+            initMazeGame(config);
+        } else {
+            console.warn('⚠️ No se encontró configuración, usando valores por defecto');
+            initMazeGame({
+                gameplay: { playerSpeed: 120, cameraScale: 4 },
+                maze: { minSize: 9, maxSize: 21, growthRate: 2 },
+                powers: {
+                    pickaxe: { enabled: true, startLevel: 10 },
+                    snowball: { enabled: true, probability: 0.8 },
+                    ally: { enabled: true, probability: 0.2 }
+                },
+                enemies: { enabled: true, startLevel: 15, moveInterval: 1.0, moveChance: 0.7 },
+                complexity: { startLevel: 6, deadEndIntensity: 0.3, falsePathIntensity: 0.2 }
+            });
+        }
+    </script>
+</body>
+</html> 

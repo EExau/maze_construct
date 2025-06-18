@@ -1,0 +1,42 @@
+{
+  "gameplay": {
+    "playerSpeed": 160,
+    "cameraScale": 2
+  },
+  "maze": {
+    "minSize": 13,
+    "maxSize": 35,
+    "growthRate": 3
+  },
+  "powers": {
+    "pickaxe": {
+      "enabled": true,
+      "startLevel": 20
+    },
+    "snowball": {
+      "enabled": true,
+      "probability": 0.6
+    },
+    "ally": {
+      "enabled": true,
+      "probability": 0.1
+    }
+  },
+  "enemies": {
+    "enabled": true,
+    "startLevel": 5,
+    "moveInterval": 0.6,
+    "moveChance": 0.9
+  },
+  "complexity": {
+    "startLevel": 2,
+    "deadEndIntensity": 0.7,
+    "falsePathIntensity": 0.6
+  },
+  "metadata": {
+    "name": "Configuración Extrema",
+    "description": "Solo para expertos - Enemigos desde nivel 5, laberintos enormes, máxima complejidad",
+    "version": "1.0",
+    "created": "2025-01-17T00:00:00.000Z"
+  }
+} 

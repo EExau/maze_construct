@@ -1,0 +1,42 @@
+{
+  "gameplay": {
+    "playerSpeed": 100,
+    "cameraScale": 4
+  },
+  "maze": {
+    "minSize": 9,
+    "maxSize": 15,
+    "growthRate": 1
+  },
+  "powers": {
+    "pickaxe": {
+      "enabled": true,
+      "startLevel": 5
+    },
+    "snowball": {
+      "enabled": true,
+      "probability": 0.9
+    },
+    "ally": {
+      "enabled": false,
+      "probability": 0
+    }
+  },
+  "enemies": {
+    "enabled": false,
+    "startLevel": 999,
+    "moveInterval": 2.0,
+    "moveChance": 0.5
+  },
+  "complexity": {
+    "startLevel": 999,
+    "deadEndIntensity": 0.1,
+    "falsePathIntensity": 0.05
+  },
+  "metadata": {
+    "name": "Configuración Fácil",
+    "description": "Perfecta para principiantes - Sin enemigos, laberintos pequeños, muchos poderes",
+    "version": "1.0",
+    "created": "2025-01-17T00:00:00.000Z"
+  }
+} 

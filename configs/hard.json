@@ -1,0 +1,47 @@
+{
+  "gameplay": {
+    "playerSpeed": 140,
+    "cameraScale": 3
+  },
+  "maze": {
+    "minSize": 11,
+    "maxSize": 25,
+    "growthRate": 2
+  },
+  "powers": {
+    "pickaxe": {
+      "enabled": true,
+      "startLevel": 15
+    },
+    "snowball": {
+      "enabled": true,
+      "probability": 0.7
+    },
+    "ally": {
+      "enabled": true,
+      "probability": 0.15
+    }
+  },
+  "enemies": {
+    "enabled": true,
+    "startLevel": 10,
+    "moveInterval": 0.8,
+    "moveChance": 0.8
+  },
+  "complexity": {
+    "startLevel": 4,
+    "deadEndIntensity": 0.5,
+    "falsePathIntensity": 0.4
+  },
+  "progression": {
+    "endLevelEnabled": true,
+    "endLevel": 75,
+    "infiniteMode": false
+  },
+  "metadata": {
+    "name": "Configuración Difícil",
+    "description": "Para jugadores experimentados - Enemigos más agresivos, laberintos complejos",
+    "version": "1.0",
+    "created": "2025-01-17T00:00:00.000Z"
+  }
+} 

@@ -1,0 +1,47 @@
+{
+  "gameplay": {
+    "playerSpeed": 120,
+    "cameraScale": 4
+  },
+  "maze": {
+    "minSize": 9,
+    "maxSize": 21,
+    "growthRate": 2
+  },
+  "powers": {
+    "pickaxe": {
+      "enabled": true,
+      "startLevel": 10
+    },
+    "snowball": {
+      "enabled": true,
+      "probability": 0.8
+    },
+    "ally": {
+      "enabled": true,
+      "probability": 0.2
+    }
+  },
+  "enemies": {
+    "enabled": true,
+    "startLevel": 15,
+    "moveInterval": 1.0,
+    "moveChance": 0.7
+  },
+  "complexity": {
+    "startLevel": 6,
+    "deadEndIntensity": 0.3,
+    "falsePathIntensity": 0.2
+  },
+  "progression": {
+    "endLevelEnabled": false,
+    "endLevel": 50,
+    "infiniteMode": true
+  },
+  "metadata": {
+    "name": "Configuración Normal",
+    "description": "Balance perfecto entre desafío y diversión - Configuración estándar recomendada",
+    "version": "1.0",
+    "created": "2025-01-17T00:00:00.000Z"
+  }
+} 
