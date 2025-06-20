@@ -1341,31 +1341,38 @@ function checkEnemyCollisions() {
 function drawAimingCrosshair(ctx, canvas) {
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    const size = 30;
+    const size = 40;
     
-    // Fondo semi-transparente
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-    ctx.fillRect(centerX - size, centerY - size, size * 2, size * 2);
-    
-    // Flechas direccionales
+    // Solo los 4 círculos direccionales (sin fondo, sin líneas, sin centro)
     const directions = [
-        { x: 0, y: -1, pos: { x: centerX, y: centerY - size/2 } }, // Arriba
-        { x: 0, y: 1, pos: { x: centerX, y: centerY + size/2 } },  // Abajo
-        { x: -1, y: 0, pos: { x: centerX - size/2, y: centerY } }, // Izquierda
-        { x: 1, y: 0, pos: { x: centerX + size/2, y: centerY } }   // Derecha
+        { x: 0, y: -1, pos: { x: centerX, y: centerY - size } }, // Arriba
+        { x: 0, y: 1, pos: { x: centerX, y: centerY + size } },  // Abajo
+        { x: -1, y: 0, pos: { x: centerX - size, y: centerY } }, // Izquierda
+        { x: 1, y: 0, pos: { x: centerX + size, y: centerY } }   // Derecha
     ];
     
     directions.forEach(dir => {
         const isActive = dir.x === aimDirection.x && dir.y === aimDirection.y;
-        ctx.fillStyle = isActive ? '#ffff00' : '#888888';
+        const pulsation = Math.sin(Date.now() / 200) * 0.3 + 0.7;
         
-        // Dibujar flecha simple
+        // Color: azul brillante para seleccionado, azul más tenue para no seleccionado
+        ctx.fillStyle = isActive ? `rgba(0, 150, 255, ${pulsation})` : 'rgba(100, 150, 200, 0.8)';
+        
+        // Tamaño: más grande para seleccionado
+        const radius = isActive ? 12 : 8;
+        
+        // Dibujar círculo
         ctx.beginPath();
-        ctx.arc(dir.pos.x, dir.pos.y, 8, 0, Math.PI * 2);
+        ctx.arc(dir.pos.x, dir.pos.y, radius, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Borde más oscuro para mejor visibilidad
+        ctx.strokeStyle = isActive ? 'rgba(0, 100, 200, 0.8)' : 'rgba(50, 100, 150, 0.6)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
     });
     
-    // Texto de instrucciones
+    // Texto de instrucciones (más abajo para no interferir)
     ctx.fillStyle = '#ffffff';
     ctx.font = '14px Arial';
     ctx.textAlign = 'center';
@@ -1379,13 +1386,13 @@ function drawAimingCrosshair(ctx, canvas) {
     if (activePower && powerNames[activePower]) {
         ctx.fillStyle = '#f39c12';
         ctx.font = '16px Arial';
-        ctx.fillText(powerNames[activePower], centerX, centerY + size + 15);
+        ctx.fillText(powerNames[activePower], centerX, centerY + size + 30);
     }
     
     ctx.fillStyle = '#ffffff';
     ctx.font = '14px Arial';
-    ctx.fillText('Usa flechas para apuntar', centerX, centerY + size + 35);
-    ctx.fillText('ESPACIO para usar, ESC para cancelar', centerX, centerY + size + 55);
+    ctx.fillText('Usa flechas para apuntar', centerX, centerY + size + 50);
+    ctx.fillText('ESPACIO para usar, ESC para cancelar', centerX, centerY + size + 70);
 }
 
 // Dibujar animaciones

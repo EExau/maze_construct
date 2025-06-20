@@ -88,7 +88,7 @@ function generateGameHTML(gameName, config) {
                 <div id="controlsInfo">
                     <p><strong>Movimiento:</strong> Flechas / WASD</p>
                     <p><strong>Poderes:</strong> 1, 2, 3</p>
-                    <p><strong>Apuntar:</strong> Flechas</p>
+                    <p><strong>Apuntar:</strong> Flechas (cruceta visible)</p>
                     <p><strong>Usar:</strong> Espacio</p>
                     <p><strong>Cancelar:</strong> Escape</p>
                 </div>
@@ -215,7 +215,9 @@ let poderes = {
 let estadoApuntado = {
     activo: false,
     poder: null,
-    direccion: 0
+    direccion: 0,
+    cursorX: 0,
+    cursorY: 0
 };
 
 let enemigosCongelados = [];
@@ -590,6 +592,12 @@ function manejarControles() {
         if (keyWasPressed("ArrowDown")) estadoApuntado.direccion = 2;
         if (keyWasPressed("ArrowLeft")) estadoApuntado.direccion = 3;
         
+        // Actualizar posición del cursor basado en dirección
+        const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]; // Arriba, Derecha, Abajo, Izquierda
+        const [dx, dy] = dirs[estadoApuntado.direccion];
+        estadoApuntado.cursorX = jugadorMatriz.x + dx;
+        estadoApuntado.cursorY = jugadorMatriz.y + dy;
+        
         if (keyWasPressed("Space")) {
             usarPoder();
             estadoApuntado.activo = false;
@@ -709,6 +717,7 @@ function verificarColisiones() {
         if (GAME_CONFIG.progression.endLevelEnabled && nivelActual >= GAME_CONFIG.progression.endLevel) {
             console.log('🎉 ¡Juego completado!');
             gameState = 'gameComplete';
+            mostrarModalFinalJuego();
             return;
         }
         
@@ -774,6 +783,99 @@ function verificarColisiones() {
             }
         });
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+function mostrarModalFinalJuego() {
+    const tiempoTotal = Math.floor(time - tiempoInicio);
+    const minutos = Math.floor(tiempoTotal / 60);
+    const segundos = tiempoTotal % 60;
+    const tiempoFormateado = \`\${minutos.toString().padStart(2, '0')}:\${segundos.toString().padStart(2, '0')}\`;
+    
+    // Crear modal
+    const modal = document.createElement('div');
+    modal.style.cssText = \`
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        font-family: Arial, sans-serif;
+    \`;
+    
+    const contenido = document.createElement('div');
+    contenido.style.cssText = \`
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+        padding: 40px;
+        border-radius: 15px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 3px solid #3498db;
+        max-width: 500px;
+    \`;
+    
+    contenido.innerHTML = \`
+        <h2 style="margin: 0 0 20px 0; color: #3498db; font-size: 2em;">🎉 ¡Felicidades!</h2>
+        <p style="font-size: 1.2em; margin: 15px 0;">Has llegado hasta el último nivel</p>
+        <p style="font-size: 1.4em; margin: 20px 0; color: #e74c3c;">
+            <strong>Tiempo total: \${tiempoFormateado}</strong>
+        </p>
+        <p style="margin: 20px 0;">¡Trata una vez más para superarte a ti mismo!</p>
+        <button id="reiniciarJuego" style="
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        ">🔄 Jugar de Nuevo</button>
+    \`;
+    
+    modal.appendChild(contenido);
+    document.body.appendChild(modal);
+    
+    // Manejar clic del botón
+    document.getElementById('reiniciarJuego').onclick = () => {
+        document.body.removeChild(modal);
+        reiniciarJuegoCompleto();
+    };
+    
+    // Efecto hover para el botón
+    const boton = document.getElementById('reiniciarJuego');
+    boton.onmouseover = () => boton.style.background = '#2980b9';
+    boton.onmouseout = () => boton.style.background = '#3498db';
+}
+
+///////////////////////////////////////////////////////////////////////////////
+function reiniciarJuegoCompleto() {
+    // Resetear todas las variables del juego
+    nivelActual = 1;
+    gameState = 'playing';
+    engineInitialized = false;
+    
+    // Resetear poderes
+    poderes.pico = 0;
+    poderes.bolaDeNieve = 0;
+    poderes.aliado = 0;
+    
+    // Resetear estado de apuntado
+    estadoApuntado.activo = false;
+    estadoApuntado.poder = null;
+    estadoApuntado.direccion = 0;
+    estadoApuntado.cursorX = 0;
+    estadoApuntado.cursorY = 0;
+    
+    // Reinicializar el juego
+    gameInit();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -885,6 +987,49 @@ function gameRender() {
             rgb(0.9, 0.9, 1)
         );
     });
+    
+    // Dibujar cursor de apuntado
+    if (estadoApuntado.activo) {
+        const centerPos = vec2(
+            jugadorMatriz.x * TILE_SIZE + TILE_SIZE/2, 
+            jugadorMatriz.y * TILE_SIZE + TILE_SIZE/2
+        );
+        
+        // Usar tiles si están disponibles
+        const usarTiles = textureInfos && textureInfos[0] && textureInfos[0].image;
+        
+        // Posiciones de las 4 direcciones (arriba, derecha, abajo, izquierda)
+        const direcciones = [
+            { pos: vec2(centerPos.x, centerPos.y + TILE_SIZE), dir: 0 }, // Arriba
+            { pos: vec2(centerPos.x + TILE_SIZE, centerPos.y), dir: 1 }, // Derecha  
+            { pos: vec2(centerPos.x, centerPos.y - TILE_SIZE), dir: 2 }, // Abajo
+            { pos: vec2(centerPos.x - TILE_SIZE, centerPos.y), dir: 3 }  // Izquierda
+        ];
+        
+        // Solo dibujar los 4 círculos direccionales (sin líneas, sin centro)
+        direcciones.forEach(({ pos, dir }) => {
+            const esSeleccionado = estadoApuntado.direccion === dir;
+            const pulsacion = Math.sin(time * 6) * 0.3 + 0.7;
+            
+            // Color: azul brillante para seleccionado, azul tenue para no seleccionado
+            const color = esSeleccionado ? 
+                rgb(0, 0.6 * pulsacion, 1) : 
+                rgb(0.4, 0.6, 0.8);
+            
+            // Tamaño: más grande para seleccionado
+            const tamano = esSeleccionado ? 
+                vec2(TILE_SIZE * 0.6, TILE_SIZE * 0.6) : 
+                vec2(TILE_SIZE * 0.4, TILE_SIZE * 0.4);
+            
+            if (usarTiles) {
+                // Usar tile ID 6 (círculo pequeño)
+                drawTile(pos, tamano, tile(6, TILE_SIZE), color);
+            } else {
+                // Fallback: círculos dibujados
+                drawRect(pos, tamano, color);
+            }
+        });
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1132,7 +1277,27 @@ body {
 // Cargar LittleJS desde archivo local optimizado (version de demo_6 exitoso)
 async function loadLittleJSFromFile() {
     try {
-        // Intentar cargar desde output/demo_6 que sabemos que funciona perfectamente
+        // Prioridad 1: Intentar cargar desde js/littlejs/littlejs.release.js (versión que funciona para juegos)
+        const releaseResponse = await fetch('js/littlejs/littlejs.release.js');
+        if (releaseResponse.ok) {
+            const content = await releaseResponse.text();
+            if (content.length > 100000) { // Verificar que sea un archivo completo
+                                 console.log('✅ LittleJS release cargado desde js/littlejs/littlejs.release.js (', content.length, 'caracteres)');
+                return content;
+            }
+        }
+        
+        // Prioridad 2: Intentar cargar desde dist/littlejs.release.js (alternativa)
+        const distReleaseResponse = await fetch('dist/littlejs.release.js');
+        if (distReleaseResponse.ok) {
+            const content = await distReleaseResponse.text();
+            if (content.length > 100000) {
+                console.log('✅ LittleJS release cargado desde dist/littlejs.release.js (', content.length, 'caracteres)');
+                return content;
+            }
+        }
+        
+        // Prioridad 3: Intentar cargar desde output/demo_6 que sabemos que funciona perfectamente
         const response = await fetch('output/demo_6/littlejs.js');
         if (response.ok) {
             const content = await response.text();

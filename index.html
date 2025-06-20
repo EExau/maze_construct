@@ -12,6 +12,9 @@
         <p>Crea tu propio juego de laberinto personalizado</p>
     </header>
 
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
     <main class="constructor-container">
         <div class="config-panel">
             <!-- Configuración Básica -->
@@ -19,11 +22,11 @@
                 <h3>⚙️ Configuración Básica</h3>
                 <div class="input-group">
                     <label for="playerSpeed">Velocidad del Jugador: <span id="playerSpeedValue">120</span></label>
-                    <input type="range" id="playerSpeed" min="60" max="300" value="120" step="10">
+                    <input type="range" id="playerSpeed" min="60" max="300" value="120" step="10" onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
                     <label for="cameraScale">Escala de Cámara: <span id="cameraScaleValue">4</span></label>
-                    <input type="range" id="cameraScale" min="2" max="8" value="4" step="1">
+                    <input type="range" id="cameraScale" min="2" max="8" value="4" step="1" onchange="onConfigChange()">
                 </div>
             </div>
 
@@ -32,15 +35,15 @@
                 <h3>📏 Tamaños de Laberinto</h3>
                 <div class="input-group">
                     <label for="minSize">Tamaño Mínimo:</label>
-                    <input type="number" id="minSize" min="7" max="15" value="9" step="2">
+                    <input type="number" id="minSize" min="7" max="15" value="9" step="2" onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
                     <label for="maxSize">Tamaño Máximo:</label>
-                    <input type="number" id="maxSize" min="15" max="50" value="21" step="2">
+                    <input type="number" id="maxSize" min="15" max="50" value="21" step="2" onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
                     <label for="growthRate">Crecimiento por Nivel:</label>
-                    <input type="number" id="growthRate" min="1" max="5" value="2">
+                    <input type="number" id="growthRate" min="1" max="5" value="2" onchange="onConfigChange()">
                 </div>
             </div>
 
@@ -48,25 +51,25 @@
             <div class="section">
                 <h3>🎯 Poderes</h3>
                 <div class="input-group">
-                    <label><input type="checkbox" id="pickaxeEnabled" checked> Pico Habilitado</label>
+                    <label><input type="checkbox" id="pickaxeEnabled" checked onchange="onConfigChange()"> Pico Habilitado</label>
                 </div>
                 <div class="input-group">
                     <label for="pickaxeStart">Nivel de Inicio del Pico:</label>
-                    <input type="number" id="pickaxeStart" min="1" max="20" value="10">
+                    <input type="number" id="pickaxeStart" min="1" max="20" value="10" onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
-                    <label><input type="checkbox" id="snowballEnabled" checked> Bola de Nieve Habilitada</label>
+                    <label><input type="checkbox" id="snowballEnabled" checked onchange="onConfigChange()"> Bola de Nieve Habilitada</label>
                 </div>
                 <div class="input-group">
                     <label for="snowballProb">Probabilidad Bola de Nieve: <span id="snowballProbValue">80%</span></label>
-                    <input type="range" id="snowballProb" min="0" max="100" value="80" step="10">
+                    <input type="range" id="snowballProb" min="0" max="100" value="80" step="10" onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
-                    <label><input type="checkbox" id="allyEnabled" checked> Aliado Habilitado</label>
+                    <label><input type="checkbox" id="allyEnabled" checked onchange="onConfigChange()"> Aliado Habilitado</label>
                 </div>
                 <div class="input-group">
                     <label for="allyProb">Probabilidad Aliado: <span id="allyProbValue">20%</span></label>
-                    <input type="range" id="allyProb" min="0" max="100" value="20" step="10">
+                    <input type="range" id="allyProb" min="0" max="100" value="20" step="10" onchange="onConfigChange()">
                 </div>
             </div>
 
@@ -74,19 +77,19 @@
             <div class="section">
                 <h3>👾 Enemigos</h3>
                 <div class="input-group">
-                    <label><input type="checkbox" id="enemiesEnabled" checked> Enemigos Habilitados</label>
+                    <label><input type="checkbox" id="enemiesEnabled" checked onchange="onConfigChange()"> Enemigos Habilitados</label>
                 </div>
                 <div class="input-group">
                     <label for="enemyStart">Nivel de Inicio de Enemigos:</label>
-                    <input type="number" id="enemyStart" min="10" max="30" value="15">
+                    <input type="number" id="enemyStart" min="10" max="30" value="15" onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
                     <label for="enemyInterval">Intervalo de Movimiento: <span id="enemyIntervalValue">1.0s</span></label>
-                    <input type="range" id="enemyInterval" min="0.5" max="3" value="1" step="0.1">
+                    <input type="range" id="enemyInterval" min="0.5" max="3" value="1" step="0.1" onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
                     <label for="enemyMoveChance">Probabilidad de Movimiento: <span id="enemyMoveChanceValue">70%</span></label>
-                    <input type="range" id="enemyMoveChance" min="30" max="100" value="70" step="10">
+                    <input type="range" id="enemyMoveChance" min="30" max="100" value="70" step="10" onchange="onConfigChange()">
                 </div>
             </div>
 
@@ -95,15 +98,15 @@
                 <h3>🧩 Complejidad del Laberinto</h3>
                 <div class="input-group">
                     <label for="complexityStart">Nivel de Inicio de Complejidad:</label>
-                    <input type="number" id="complexityStart" min="1" max="15" value="6">
+                    <input type="number" id="complexityStart" min="1" max="15" value="6" onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
                     <label for="deadEndIntensity">Intensidad Callejones: <span id="deadEndIntensityValue">30%</span></label>
-                    <input type="range" id="deadEndIntensity" min="0" max="100" value="30" step="10">
+                    <input type="range" id="deadEndIntensity" min="0" max="100" value="30" step="10" onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
                     <label for="falsePathIntensity">Intensidad Rutas Falsas: <span id="falsePathIntensityValue">20%</span></label>
-                    <input type="range" id="falsePathIntensity" min="0" max="100" value="20" step="10">
+                    <input type="range" id="falsePathIntensity" min="0" max="100" value="20" step="10" onchange="onConfigChange()">
                 </div>
             </div>
 
@@ -111,14 +114,14 @@
             <div class="section">
                 <h3>🏁 Progresión del Juego</h3>
                 <div class="input-group">
-                    <label><input type="checkbox" id="endLevelEnabled"> Nivel Final Habilitado</label>
+                    <label><input type="checkbox" id="endLevelEnabled" onchange="onConfigChange()"> Nivel Final Habilitado</label>
                 </div>
                 <div class="input-group">
                     <label for="endLevel">Nivel Final:</label>
-                    <input type="number" id="endLevel" min="10" max="100" value="50" disabled>
+                    <input type="number" id="endLevel" min="10" max="100" value="50" disabled onchange="onConfigChange()">
                 </div>
                 <div class="input-group">
-                    <label><input type="checkbox" id="infiniteMode" checked> Modo Infinito</label>
+                    <label><input type="checkbox" id="infiniteMode" checked onchange="onConfigChange()"> Modo Infinito</label>
                 </div>
             </div>
 
@@ -136,11 +139,11 @@
 
         <div class="actions-panel">
             <div class="main-actions">
-                <button class="btn-primary" onclick="generateConfig()">📄 Generar Configuración</button>
-                <button class="btn-success" onclick="testGame()">🎮 Probar Juego</button>
-                <button class="btn-build" onclick="buildGame()">🚀 Construir Juego</button>
-                <button class="btn-secondary" onclick="exportConfig()">💾 Exportar JSON</button>
-                <button class="btn-secondary" onclick="importConfig()">📂 Importar</button>
+                <button id="btnGenerateConfig" class="btn-primary" onclick="generateConfig()">📄 Generar Configuración</button>
+                <button id="btnTestGame" class="btn-success disabled" onclick="testGame()" disabled>🎮 Probar Juego</button>
+                <button id="btnBuildGame" class="btn-build disabled" onclick="buildGame()" disabled>🚀 Construir Juego</button>
+                <button id="btnExportConfig" class="btn-secondary" onclick="exportConfig()">💾 Exportar JSON</button>
+                <button id="btnImportConfig" class="btn-secondary" onclick="importConfig()">📂 Importar</button>
             </div>
 
             <div class="config-output">
@@ -155,7 +158,8 @@
     </main>
 
     <footer>
-        <p>🎯 Constructor de Laberintos - Powered by LittleJS</p>
+        <p>🎯 Constructor de Laberintos por <strong>EExau</strong> - Powered by LittleJS</p>
+        <p>Versión 2.3 - 2025</p>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>

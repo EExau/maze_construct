@@ -89,6 +89,11 @@ release/
 docs/generated/
 api-docs/
 
+# Mantener documentación importante
+!HISTORIAL_VERSIONES.md
+!DOCUMENTACION_TECNICA.md
+!GUIA_USUARIO.md
+
 # Archivos de caché del navegador
 .cache/
 *.manifest

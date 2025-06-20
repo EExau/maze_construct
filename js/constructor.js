@@ -2,6 +2,71 @@
 
 // Configuración actual
 let currentConfig = {};
+let configGenerated = false; // Estado para controlar botones
+
+// Sistema de Toast
+function showToast(message, type = 'success', duration = 3000) {
+    const toastContainer = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icons = {
+        success: '✅',
+        info: 'ℹ️',
+        warning: '⚠️',
+        error: '❌'
+    };
+    
+    toast.innerHTML = `
+        <span class="toast-icon">${icons[type] || icons.success}</span>
+        <span class="toast-message">${message}</span>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto-remover después del tiempo especificado
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, duration);
+}
+
+// Control de estado de botones
+function updateButtonStates() {
+    const btnTestGame = document.getElementById('btnTestGame');
+    const btnBuildGame = document.getElementById('btnBuildGame');
+    
+    if (configGenerated) {
+        // Habilitar botones
+        btnTestGame.disabled = false;
+        btnTestGame.classList.remove('disabled');
+        btnBuildGame.disabled = false;
+        btnBuildGame.classList.remove('disabled');
+    } else {
+        // Deshabilitar botones
+        btnTestGame.disabled = true;
+        btnTestGame.classList.add('disabled');
+        btnBuildGame.disabled = true;
+        btnBuildGame.classList.add('disabled');
+    }
+}
+
+// Función llamada cuando cambia cualquier configuración
+function onConfigChange() {
+    configGenerated = false;
+    updateButtonStates();
+    
+    // Limpiar textarea de configuración si había algo
+    const configOutput = document.getElementById('configOutput');
+    if (configOutput.value) {
+        configOutput.value = '';
+        showToast('Configuración modificada. Genere nueva configuración para continuar.', 'warning');
+    }
+}
 
 // Presets predefinidos
 const presets = {
@@ -112,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeSliders();
     initializeCheckboxes();
     loadPreset('normal'); // Cargar preset normal por defecto
+    updateButtonStates(); // Inicializar estado de botones
 });
 
 // Inicializar sliders con valores dinámicos
@@ -198,8 +264,23 @@ function loadPreset(presetName) {
         endLevelInput.disabled = !preset.endLevelEnabled;
     }
 
-    // Generar configuración automáticamente
-    generateConfig();
+    // Mostrar toast de preset cargado
+    const presetNames = {
+        easy: '😊 Fácil',
+        normal: '😐 Normal', 
+        hard: '😰 Difícil',
+        extreme: '💀 Extremo'
+    };
+    
+    showToast(`Preset "${presetNames[presetName]}" cargado correctamente`, 'success');
+    
+    // Resetear estado de configuración generada
+    configGenerated = false;
+    updateButtonStates();
+    
+    // Limpiar textarea
+    const configOutput = document.getElementById('configOutput');
+    configOutput.value = '';
 }
 
 // Generar configuración JSON
@@ -267,17 +348,27 @@ function generateConfig() {
 
     // Mostrar en el textarea
     document.getElementById('configOutput').value = JSON.stringify(currentConfig, null, 2);
+    
+    // Actualizar estado de configuración generada
+    configGenerated = true;
+    updateButtonStates();
+    
+    // Mostrar toast de éxito
+    showToast('📄 Configuración generada correctamente. Ya puedes probar o construir el juego.', 'success');
 }
 
 // Probar el juego
 function testGame() {
-    if (!currentConfig || Object.keys(currentConfig).length === 0) {
-        alert('⚠️ Primero genera una configuración');
+    if (!configGenerated || !currentConfig || Object.keys(currentConfig).length === 0) {
+        showToast('⚠️ Primero genera una configuración para poder probar el juego', 'warning');
         return;
     }
     
     // Guardar configuración temporalmente
     localStorage.setItem('tempMazeConfig', JSON.stringify(currentConfig));
+    
+    // Mostrar toast informativo
+    showToast('🎮 Abriendo juego de prueba en nueva ventana...', 'info');
     
     // Abrir página de juego
     window.open('game.html', '_blank');
@@ -286,7 +377,7 @@ function testGame() {
 // Exportar configuración
 function exportConfig() {
     if (!currentConfig || Object.keys(currentConfig).length === 0) {
-        alert('⚠️ Primero genera una configuración');
+        showToast('⚠️ Primero genera una configuración para poder exportarla', 'warning');
         return;
     }
     
@@ -302,6 +393,9 @@ function exportConfig() {
     link.href = URL.createObjectURL(dataBlob);
     link.download = `${configName.replace(/[^a-zA-Z0-9]/g, '_')}.json`;
     link.click();
+    
+    // Mostrar toast de éxito
+    showToast(`💾 Configuración "${configName}" exportada correctamente`, 'success');
 }
 
 // Importar configuración
@@ -319,9 +413,16 @@ function importConfig() {
             try {
                 const config = JSON.parse(e.target.result);
                 applyImportedConfig(config);
-                alert('✅ Configuración importada correctamente');
+                showToast(`📂 Configuración "${config.metadata?.name || 'Sin nombre'}" importada correctamente`, 'success');
+                
+                // Resetear estado de configuración generada
+                configGenerated = false;
+                updateButtonStates();
+                
+                // Limpiar textarea
+                document.getElementById('configOutput').value = '';
             } catch (error) {
-                alert('❌ Error al leer el archivo: ' + error.message);
+                showToast(`❌ Error al leer el archivo: ${error.message}`, 'error');
             }
         };
         reader.readAsText(file);
@@ -393,19 +494,19 @@ function applyImportedConfig(config) {
 function copyConfig() {
     const textarea = document.getElementById('configOutput');
     if (!textarea.value) {
-        alert('⚠️ No hay configuración para copiar');
+        showToast('⚠️ No hay configuración para copiar', 'warning');
         return;
     }
     
     textarea.select();
     document.execCommand('copy');
-    alert('📋 Configuración copiada al portapapeles');
+    showToast('📋 Configuración copiada al portapapeles', 'success');
 }
 
 // Guardar configuración en localStorage
 function saveConfig() {
     if (!currentConfig || Object.keys(currentConfig).length === 0) {
-        alert('⚠️ No hay configuración para guardar');
+        showToast('⚠️ No hay configuración para guardar', 'warning');
         return;
     }
     
@@ -421,13 +522,13 @@ function saveConfig() {
     savedConfigs[configName] = currentConfig;
     localStorage.setItem('savedMazeConfigs', JSON.stringify(savedConfigs));
     
-    alert('✅ Configuración guardada: ' + configName);
+    showToast(`💾 Configuración "${configName}" guardada correctamente`, 'success');
 }
 
 // Construir juego completo
 async function buildGame() {
-    if (!currentConfig || Object.keys(currentConfig).length === 0) {
-        alert('⚠️ Primero genera una configuración');
+    if (!configGenerated || !currentConfig || Object.keys(currentConfig).length === 0) {
+        showToast('⚠️ Primero genera una configuración para poder construir el juego', 'warning');
         return;
     }
     
@@ -435,6 +536,9 @@ async function buildGame() {
     if (!gameName) return;
     
     try {
+        // Mostrar toast de inicio
+        showToast('🚀 Iniciando construcción del juego...', 'info', 2000);
+        
         // Mostrar indicador de carga
         const loadingMsg = document.createElement('div');
         loadingMsg.innerHTML = '🚀 Construyendo juego...';
@@ -448,10 +552,10 @@ async function buildGame() {
         await downloadGameZip(gameName, gameFiles);
         
         document.body.removeChild(loadingMsg);
-        alert('✅ ¡Juego construido y descargado correctamente!');
+        showToast(`✅ ¡Juego "${gameName}" construido y descargado correctamente!`, 'success', 5000);
         
     } catch (error) {
-        alert('❌ Error al construir el juego: ' + error.message);
+        showToast(`❌ Error al construir el juego: ${error.message}`, 'error', 5000);
         console.error('Error de construcción:', error);
     }
 } 

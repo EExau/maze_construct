@@ -20,6 +20,10 @@ Un **constructor visual intuitivo** que permite crear juegos completos de laberi
 - **🔊 Audio Integrado**: Sistema de sonidos ZzFX incorporado
 - **📱 Responsive**: Funciona en desktop y móvil
 - **🚀 Sin Dependencias**: Juegos generados funcionan offline
+- **🛠️ DevTools Compatible**: F12 y herramientas de desarrollo totalmente funcionales
+- **⚡ Optimizado**: Sin bloqueos, loops infinitos o errores críticos
+- **🔒 100% Estable**: Todos los juegos generados funcionan perfectamente
+- **🎯 Apuntado Visual**: Sistema de cruceta minimalista con círculos azules
 
 ## 🚀 Demo en Vivo
 
@@ -72,17 +76,20 @@ python -m http.server 8080
 
 ### 🔨 Pico
 - **Función**: Rompe paredes adyacentes
-- **Control**: Tecla `1` + Flechas + Espacio
+- **Control**: Tecla `1` → Círculos azules aparecen → Flechas para seleccionar → Espacio
+- **Visual**: El círculo de la dirección seleccionada pulsa en azul brillante
 - **Estrategia**: Crea atajos o escapes de emergencia
 
 ### ❄️ Bola de Nieve  
 - **Función**: Congela enemigos temporalmente
-- **Control**: Tecla `2` + Apuntar + Espacio
+- **Control**: Tecla `2` → Apuntar con círculos azules → Espacio
+- **Visual**: 4 círculos azules muestran direcciones disponibles
 - **Estrategia**: Neutraliza amenazas a distancia
 
 ### 🤖 Aliado
 - **Función**: Elimina enemigo más cercano
-- **Control**: Tecla `3` (uso inmediato)
+- **Control**: Tecla `3` (uso inmediato, sin apuntado)
+- **Visual**: Efecto inmediato sin interfaz de apuntado
 - **Estrategia**: Limpia el camino hacia la meta
 
 ## 🏗️ Arquitectura Técnica
@@ -92,6 +99,15 @@ python -m http.server 8080
 - **Audio**: ZzFX - Generación procedural de sonidos
 - **Frontend**: Vanilla JavaScript ES6+
 - **Empaquetado**: JSZip para descarga de juegos
+
+### 🔧 Mejoras Técnicas v2.3
+- **Protección de Variables**: Try/catch para todas las asignaciones del motor
+- **Algoritmo Iterativo**: Generación de laberintos sin recursión
+- **Parche Anti-Bloqueo**: Eventos selectivos para DevTools
+- **Optimización de Rendimiento**: Actualizaciones escalonadas (enemigos cada 3 frames)
+- **Timeouts de Seguridad**: Límites temporales para prevenir loops infinitos
+- **CSS Optimizado**: Estilos que permiten herramientas de desarrollo
+- **Interfaz de Apuntado**: Sistema visual minimalista con 4 círculos azules
 
 ### Estructura del Proyecto
 ```
@@ -106,6 +122,14 @@ maze_construct/
 ├── assets/           # Recursos (tiles, etc.)
 ├── configs/          # Presets predefinidos
 ```
+
+### 🐛 Problemas Resueltos en v2.3
+- ✅ **"Assignment to constant variable"**: Error crítico eliminado
+- ✅ **DevTools bloqueadas**: F12 y clic derecho funcionan perfectamente
+- ✅ **Loops infinitos**: Algoritmo iterativo con timeouts de seguridad
+- ✅ **Juegos que no cargan**: Inicialización robusta implementada
+- ✅ **Rendimiento lento**: Optimizaciones de CPU y memoria aplicadas
+- ✅ **Interfaz confusa**: Sistema de apuntado simplificado y más claro
 
 ### 🐛 Reportar Bugs
 - Usa el [sistema de issues](../../issues)
@@ -139,23 +163,47 @@ Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles.
 
 ## 🔄 Changelog
 
-### v2.2 (Actual) - Juegos 100% Estables
-- ✅ **Errores críticos eliminados**: Sin loops infinitos
-- ✅ **Algoritmo iterativo**: Generación de laberinto sin recursión  
-- ✅ **DevTools accesible**: Sin bloqueos del navegador
-- ✅ **UI optimizada**: Diseño profesional sin bordes azules
-- ✅ **Avance de nivel correcto**: Sin lag entre niveles
+> 📋 **Ver historial completo**: [HISTORIAL_VERSIONES.md](HISTORIAL_VERSIONES.md)
 
-### v2.1 - Corrección de Errores
-- ✅ Error de sintaxis JavaScript corregido
-- 🎮 Inicialización robusta de LittleJS
-- 📦 Descarga como ZIP implementada
+### v2.3 (Actual) - Interfaz de Apuntado Optimizada ⭐
+**Fecha**: Junio 2025
+- 🎯 **Sistema de apuntado rediseñado**: Solo 4 círculos azules, sin cruceta confusa
+- 🎨 **Colores optimizados**: Azul brillante pulsante para seleccionado, azul tenue para no seleccionado
+- 📐 **Posicionamiento mejorado**: Círculos más separados (40px) y tamaños variables
+- 🧹 **Interfaz limpia**: Eliminado fondo gris, líneas rojas y punto central
+- ✨ **Experiencia mejorada**: Apuntado más intuitivo y menos confuso
+- 🔧 **Consistencia**: Mismo comportamiento en todos los motores de juego
 
-### v2.0 - Constructor Visual
-- 🎨 Interface visual completa
-- ⚙️ Sistema de configuración avanzado  
-- 🎯 Presets predefinidos (Fácil → Extremo)
+### v2.2 - Estabilidad Total y Compatibilidad Completa
+**Fecha**: Junio 2025
+- 🛠️ **Corrección crítica**: Error "Assignment to constant variable" eliminado
+- 🔧 **Protección robusta**: Try/catch para todas las variables del motor LittleJS
+- 🚀 **DevTools completamente funcionales**: F12, clic derecho y herramientas de desarrollo
+- ⚡ **Optimizaciones de rendimiento**: Actualizaciones escalonadas, límite de enemigos
+- 🎯 **Parche anti-bloqueo**: CSS y eventos optimizados para compatibilidad total
+- 🏗️ **Algoritmo iterativo**: Generación de laberintos sin recursión ni stack overflow
+- 📚 **Documentación completa**: Guía técnica y de usuario detallada
+- 🔒 **Timeouts de seguridad**: Prevención de loops infinitos con límites temporales
+- 🎮 **Configuración balanceada**: Basada en el patrón exitoso de demo_6
+- ✅ **100% estable**: Juegos generados funcionan sin errores
 
-### v1.0 - Versión Inicial
-- 🛠️ Constructor básico funcional
-- 🎮 Generación de juegos simples 
+### v2.1 - Mejoras de Funcionalidad
+**Fecha**: Junio 2025
+- ✅ **Error de sintaxis corregido**: Problemas de JavaScript resueltos
+- 🎮 **Inicialización mejorada**: LittleJS más robusto y confiable
+- 📦 **Sistema de descarga**: Exportación completa en formato ZIP
+- 🔊 **Audio integrado**: Sistema ZzFX funcionando correctamente
+
+### v2.0 - Constructor Visual Completo
+**Fecha**: Junio 2025
+- 🎨 **Interfaz visual completa**: Constructor drag-and-drop intuitivo
+- ⚙️ **Sistema de configuración avanzado**: Control total de parámetros
+- 🎯 **Presets predefinidos**: Configuraciones Fácil, Normal, Difícil, Extremo
+- 📱 **Diseño responsive**: Compatible con diferentes resoluciones
+- 🎮 **Vista previa en tiempo real**: Cambios visibles instantáneamente
+
+### v1.0 - Versión Inicial (Prototipo)
+**Fecha**: Junio 2025
+- 🛠️ **Constructor básico**: Funcionalidad mínima viable
+- 🎮 **Generación simple**: Juegos básicos de laberinto
+- 🏗️ **Fundación técnica**: Estructura base del proyecto 
