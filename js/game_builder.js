@@ -135,6 +135,35 @@ function generateGameHTML(gameName, config) {
         // Actualizar UI cada segundo
         setInterval(actualizarUI, 1000);
         
+        // PARCHE LIGERO: Aplicar configuraciones anti-bloqueo después de la inicialización
+        console.log('🔧 Aplicando parche ligero para DevTools...');
+        
+        // Configurar eventos del navegador SOLO para DevTools
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                console.log('🔧 F12/DevTools - Permitiendo...');
+                e.stopImmediatePropagation();
+                return true;
+            }
+        }, true);
+        
+        document.addEventListener('contextmenu', (e) => {
+            console.log('🔧 Clic derecho - Permitiendo menú contextual...');
+            e.stopImmediatePropagation();
+            return true;
+        }, true);
+        
+        // Aplicar estilos CSS anti-bloqueo después de 3 segundos
+        setTimeout(() => {
+            console.log('🔧 Aplicando estilos CSS anti-bloqueo...');
+            const canvas = document.querySelector('canvas');
+            if (canvas) {
+                canvas.style.pointerEvents = 'auto';
+                canvas.style.userSelect = 'text';
+                console.log('✅ Estilos CSS aplicados correctamente');
+            }
+        }, 3000);
+        
         // Inicializar motor LittleJS cuando la página cargue
         window.addEventListener('load', () => {
             console.log('🎮 Iniciando motor LittleJS...');
@@ -151,7 +180,7 @@ function generateGameHTML(gameName, config) {
 </html>`;
 }
 
-// Generar motor de juego optimizado
+// Generar motor de juego optimizado basado en demo_6 exitoso
 function generateGameEngine(config) {
     return `'use strict';
 
@@ -222,14 +251,23 @@ function gameInit() {
     engineInitialized = true;
     console.log('🎮 Inicializando juego con configuración personalizada');
     
-    // Configurar motor LittleJS
-    if (typeof gravity !== 'undefined') gravity = 0;
-    if (typeof showWatermark !== 'undefined') showWatermark = false;
+    // Configurar motor LittleJS para mejor rendimiento y compatibilidad
+    // Nota: Algunas variables pueden ser constantes, usar try/catch para evitar errores
+    try { if (typeof gravity !== 'undefined') gravity = 0; } catch(e) {}
+    try { if (typeof showWatermark !== 'undefined') showWatermark = false; } catch(e) {}
+    try { if (typeof enableAsserts !== 'undefined') enableAsserts = false; } catch(e) {}
+    try { if (typeof debugKey !== 'undefined') debugKey = ''; } catch(e) {}
+    
+    // Configuraciones para reducir bloqueo del navegador
+    try { if (typeof frameRate !== 'undefined') frameRate = 60; } catch(e) {} // Limitar a 60 FPS
+    try { if (typeof objectMaxSpeed !== 'undefined') objectMaxSpeed = 1000; } catch(e) {}
     
     // Aplicar configuración de cámara
-    if (typeof cameraScale !== 'undefined') {
-        cameraScale = GAME_CONFIG.gameplay.cameraScale || 4;
-    }
+    try {
+        if (typeof cameraScale !== 'undefined') {
+            cameraScale = GAME_CONFIG.gameplay.cameraScale || 4;
+        }
+    } catch(e) {}
     
     // Resetear variables
     paredes = [];
@@ -250,9 +288,11 @@ function gameInit() {
     };
     
     // Centrar cámara en el jugador
-    if (typeof cameraPos !== 'undefined' && typeof vec2 !== 'undefined') {
-        cameraPos = vec2(jugadorPos.x, jugadorPos.y);
-    }
+    try {
+        if (typeof cameraPos !== 'undefined' && typeof vec2 !== 'undefined') {
+            cameraPos = vec2(jugadorPos.x, jugadorPos.y);
+        }
+    } catch(e) {}
     
     // Dar poderes iniciales según configuración
     if (GAME_CONFIG.powers.pickaxe.enabled && nivelActual >= GAME_CONFIG.powers.pickaxe.startLevel) {
@@ -466,29 +506,27 @@ function generarPoderesEnMapa() {
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdate() {
-    // Verificar timeout de frame para evitar loops infinitos
-    const currentTime = Date.now();
-    if (currentTime - lastFrameTime > 100 && !frameTimeoutWarning) {
-        console.warn('⚠️ Frame tardó más de 100ms, posible loop detectado');
-        frameTimeoutWarning = true;
-        setTimeout(() => frameTimeoutWarning = false, 5000); // Reset warning
-    }
-    lastFrameTime = currentTime;
-    
+    // Optimización: Salir temprano si no está jugando
     if (gameState !== 'playing') return;
     
-    // Verificar que las variables estén inicializadas
-    if (!jugadorPos || !mazeData || !cameraPos) {
+    // Verificar que las variables estén inicializadas (solo una vez)
+    if (!jugadorPos || !mazeData) {
         console.warn('⚠️ Variables no inicializadas en gameUpdate');
         return;
     }
     
-    // Actualizar cámara para seguir al jugador
-    cameraPos = vec2(jugadorPos.x, jugadorPos.y);
+    // Controles del jugador (alta prioridad)
+    manejarControles();
     
-    // Actualizar enemigos congelados (con límite de seguridad)
-    if (enemigosCongelados && enemigosCongelados.length > 0) {
-        for (let i = Math.min(enemigosCongelados.length - 1, 10); i >= 0; i--) {
+    // Verificar colisiones (alta prioridad)
+    verificarColisiones();
+    
+    // Actualizaciones menos frecuentes para reducir carga CPU
+    const frameCount = Math.floor(time * 60); // 60 FPS base
+    
+    // Actualizar enemigos congelados cada 3 frames
+    if (frameCount % 3 === 0 && enemigosCongelados && enemigosCongelados.length > 0) {
+        for (let i = Math.min(enemigosCongelados.length - 1, 5); i >= 0; i--) {
             if (enemigosCongelados[i]) {
                 enemigosCongelados[i].freezeTime -= timeDelta;
                 if (enemigosCongelados[i].freezeTime <= 0) {
@@ -499,10 +537,10 @@ function gameUpdate() {
         }
     }
     
-    // Mover enemigos según configuración (con límite de seguridad)
+    // Mover enemigos con intervalo más espaciado
     if (time - ultimoMovimientoEnemigos > GAME_CONFIG.enemies.moveInterval) {
         if (enemigos && enemigos.length > 0) {
-            const maxEnemigos = Math.min(enemigos.length, 20); // Límite de 20 enemigos
+            const maxEnemigos = Math.min(enemigos.length, 5); // Reducir a 5 enemigos max
             for (let i = 0; i < maxEnemigos; i++) {
                 const enemigo = enemigos[i];
                 if (enemigo && !enemigo.frozen && Math.random() < GAME_CONFIG.enemies.moveChance) {
@@ -511,17 +549,6 @@ function gameUpdate() {
             }
         }
         ultimoMovimientoEnemigos = time;
-    }
-    
-    // Controles del jugador
-    manejarControles();
-    
-    // Verificar colisiones
-    verificarColisiones();
-    
-    // Actualizar HUD (con throttling)
-    if (Math.floor(time * 2) !== Math.floor((time - timeDelta) * 2)) {
-        actualizarHUD(); // Solo actualizar 2 veces por segundo
     }
 }
 
@@ -677,6 +704,13 @@ function verificarColisiones() {
         gameState = 'levelComplete';
         sonidos.meta.play();
         console.log(\`🎯 Nivel \${nivelActual} completado!\`);
+        
+        // Verificar si se completó el juego
+        if (GAME_CONFIG.progression.endLevelEnabled && nivelActual >= GAME_CONFIG.progression.endLevel) {
+            console.log('🎉 ¡Juego completado!');
+            gameState = 'gameComplete';
+            return;
+        }
         
         // Avanzar al siguiente nivel después de un breve delay
         setTimeout(() => {
@@ -855,9 +889,23 @@ function gameRender() {
 
 ///////////////////////////////////////////////////////////////////////////////
 function gameUpdatePost() {
-    // Mantener la cámara centrada en el jugador
-    if (jugadorPos) {
+    // Actualizar cámara y HUD de forma menos frecuente
+    const frameCount = Math.floor(time * 60);
+    
+    // Actualizar cámara cada 2 frames (30 FPS en lugar de 60)
+    if (frameCount % 2 === 0 && jugadorPos) {
         cameraPos = vec2(jugadorPos.x, jugadorPos.y);
+    }
+    
+    // Actualizar HUD cada 30 frames (2 veces por segundo)
+    if (frameCount % 30 === 0) {
+        try {
+            if (typeof actualizarHUD === 'function') {
+                actualizarHUD();
+            }
+        } catch (error) {
+            // Silenciar errores de HUD para no bloquear el juego
+        }
     }
 }
 
@@ -866,13 +914,36 @@ function gameRenderPost() {
     // Renderizado adicional si es necesario
 }
 
-// Inicializar LittleJS
-engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, 'tiles.png');`;
+// PARCHE LIGERO: Solo aplicar después de que LittleJS esté funcionando
+setTimeout(() => {
+    console.log('🔧 Aplicando parche ligero para DevTools...');
+    
+    // Aplicar estilos para permitir eventos del navegador
+    const canvas = document.querySelector('canvas');
+    if (canvas) {
+        canvas.style.pointerEvents = 'auto';
+        canvas.style.userSelect = 'text';
+        console.log('🔧 Estilos de canvas actualizados');
+    }
+    
+    document.body.style.pointerEvents = 'auto';
+    document.body.style.userSelect = 'text';
+    
+}, 3000); // Esperar 3 segundos para que LittleJS esté completamente inicializado
+
+// Detectar cuando se abren las DevTools
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        console.log('🔧 Página oculta - DevTools probablemente abierto');
+    }
+});
+
+// Inicializar LittleJS desde HTML para evitar doble inicialización`;
 }
 
 // Generar CSS del juego
 function generateGameCSS() {
-    return `/* Estilos del Juego Generado - Basado en demo_4 perfecto */
+    return `/* Estilos del Juego Generado - Basado en demo_6 exitoso */
 body {
     margin: 0;
     padding: 0;
@@ -880,6 +951,9 @@ body {
     color: #ffffff;
     font-family: Arial, sans-serif;
     overflow: hidden;
+    /* Permitir eventos del navegador en todo el body */
+    pointer-events: auto !important;
+    user-select: text !important;
 }
 
 #gameContainer {
@@ -955,6 +1029,12 @@ body {
     z-index: 10;
     position: relative;
     object-fit: contain;
+    /* Permitir eventos del navegador */
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
 }
 
 #gameInfo {
@@ -1049,15 +1129,25 @@ body {
 }`;
 }
 
-// Cargar LittleJS desde archivo local optimizado (version de demo_4)
+// Cargar LittleJS desde archivo local optimizado (version de demo_6 exitoso)
 async function loadLittleJSFromFile() {
     try {
-        // Intentar cargar desde output/demo_4 que sabemos que funciona
-        const response = await fetch('output/demo_4/littlejs.js');
+        // Intentar cargar desde output/demo_6 que sabemos que funciona perfectamente
+        const response = await fetch('output/demo_6/littlejs.js');
         if (response.ok) {
             const content = await response.text();
-            if (content.length > 100000) { // Verificar que sea un archivo completo (demo_4 tiene ~5482 líneas)
-                console.log('✅ LittleJS optimizado cargado desde demo_4 (', content.length, 'caracteres)');
+            if (content.length > 100000) { // Verificar que sea un archivo completo (demo_6 tiene ~5482 líneas)
+                console.log('✅ LittleJS optimizado cargado desde demo_6 exitoso (', content.length, 'caracteres)');
+                return content;
+            }
+        }
+        
+        // Fallback: intentar demo_4 como segunda opción
+        const demo4Response = await fetch('output/demo_4/littlejs.js');
+        if (demo4Response.ok) {
+            const content = await demo4Response.text();
+            if (content.length > 100000) {
+                console.log('✅ LittleJS cargado desde demo_4 como fallback (', content.length, 'caracteres)');
                 return content;
             }
         }
@@ -1289,14 +1379,21 @@ console.warn('⚠️ Esta es una versión reducida de LittleJS para compatibilid
 `;
 }
 
-// Obtener imagen de tiles (usar la de demo_4 que funciona)
+// Obtener imagen de tiles (usar la de demo_6 exitoso)
 async function fetchTilesImage() {
     try {
-        // Intentar cargar desde demo_4 que sabemos que funciona
-        const response = await fetch('output/demo_4/tiles.png');
+        // Intentar cargar desde demo_6 que sabemos que funciona perfectamente
+        const response = await fetch('output/demo_6/tiles.png');
         if (response.ok) {
-            console.log('✅ Tiles cargadas desde demo_4');
+            console.log('✅ Tiles cargadas desde demo_6 exitoso');
             return await response.blob();
+        }
+        
+        // Fallback: intentar demo_4
+        const demo4Response = await fetch('output/demo_4/tiles.png');
+        if (demo4Response.ok) {
+            console.log('✅ Tiles cargadas desde demo_4 como fallback');
+            return await demo4Response.blob();
         }
         
         // Fallback: assets local

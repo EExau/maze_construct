@@ -1,0 +1,98 @@
+# Constructor de Laberintos - .gitignore
+
+# Archivos de salida generados por el constructor
+output/
+!output/.gitkeep
+
+# Archivos temporales del sistema
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Archivos de respaldo del editor
+*~
+*.bak
+*.swp
+*.swo
+*#
+
+# Archivos del sistema Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Archivos del sistema macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Archivos del sistema Linux
+*~
+.directory
+
+# Archivos de IDEs y editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.atom/
+.brackets.json
+
+# Archivos de Node.js (si se usa en el futuro)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Archivos de dependencias y librerías externas descargadas
+js/littlejs/littlejs.min.js
+js/external/
+
+# Archivos de configuración local
+config.local.json
+.env
+.env.local
+
+# Archivos de prueba temporal
+test_*.html
+debug_*.html
+temp_*.html
+test_constructor.html
+
+# Archivos comprimidos
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# Archivos de imagen temporales o de prueba
+temp_*.png
+test_*.png
+debug_*.png
+
+# Logs del juego
+game_*.log
+error_*.log
+
+# Carpetas de build o distribución
+dist/
+build/
+release/
+
+# Archivos de documentación generada automáticamente
+docs/generated/
+api-docs/
+
+# Archivos de caché del navegador
+.cache/
+*.manifest
+
+# Archivos de configuración de herramientas
+.eslintcache
+.stylelintcache 
